@@ -49,14 +49,22 @@ export default async function DashboardPage() {
             </Link>
             <p className="text-sm text-gray-500 mt-1">{user.email}</p>
           </div>
-          <form action="/auth/signout" method="post">
-            <button
-              type="submit"
-              className="text-sm px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
-            >
-              خروج
-            </button>
-          </form>
+         <div className="flex gap-2">
+  <Link
+    href="/alternatives"
+    className="text-sm px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+  >
+    البدائل السعودية
+  </Link>
+  <form action="/auth/signout" method="post">
+    <button
+      type="submit"
+      className="text-sm px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+    >
+      خروج
+    </button>
+  </form>
+</div>
         </div>
 
         {/* Stats */}
