@@ -1,3 +1,4 @@
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
@@ -49,7 +50,8 @@ export default async function DashboardPage() {
             </Link>
             <p className="text-sm text-gray-500 mt-1">{user.email}</p>
           </div>
-         <div className="flex gap-2">
+         <div className="flex gap-2 items-center">
+  <ThemeToggle />
   <Link
     href="/alternatives"
     className="text-sm px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
