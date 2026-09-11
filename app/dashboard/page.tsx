@@ -1,3 +1,4 @@
+import { EmailVerificationBanner } from '@/components/EmailVerificationBanner';
 import { SubscriptionsFilter } from '@/components/SubscriptionsFilter';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { SpendingChart } from '@/components/SpendingChart';
@@ -16,6 +17,7 @@ export default async function DashboardPage() {
     redirect('/login');
   }
 
+  const emailVerified = user.email_confirmed_at != null;
   const { data: subscriptions } = await supabase
     .from('subscriptions')
     .select('*')
@@ -88,6 +90,10 @@ export default async function DashboardPage() {
   </form>
 </div>
         </div>
+        {/* Email verification banner */}
+        {!emailVerified && user.email && (
+          <EmailVerificationBanner email={user.email} />
+        )}
 
         {/* Stats */}
         <div className="grid md:grid-cols-3 gap-4 mb-8">
