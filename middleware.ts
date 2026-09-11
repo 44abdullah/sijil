@@ -44,7 +44,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // الصفحات المحمية
-  const protectedPaths = ['/dashboard'];
+  const protectedPaths = ['/dashboard', '/alternatives'];
   const isProtected = protectedPaths.some((p) => pathname.startsWith(p));
 
   // صفحات الدخول والتسجيل
