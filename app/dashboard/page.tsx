@@ -1,3 +1,4 @@
+import { SubscriptionsFilter } from '@/components/SubscriptionsFilter';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { SpendingChart } from '@/components/SpendingChart';
 import { redirect } from 'next/navigation';
@@ -120,26 +121,8 @@ export default async function DashboardPage() {
           </Link>
         </div>
 
-        {/* Subscriptions */}
-        {subs.length === 0 ? (
-          <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
-            <p className="text-gray-500 mb-4">
-              ما عندك أي اشتراك بعد.
-            </p>
-            <Link
-              href="/dashboard/new"
-              className="inline-block px-6 py-3 rounded-lg bg-brand-600 text-white font-semibold hover:bg-brand-700"
-            >
-              أضف أول اشتراك
-            </Link>
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {subs.map((sub) => (
-              <SubscriptionCard key={sub.id} sub={sub} />
-            ))}
-          </div>
-        )}
+              {/* Subscriptions */}
+        <SubscriptionsFilter subs={subs} />
       </div>
     </main>
   );
@@ -151,51 +134,5 @@ function StatCard({ label, value }: { label: string; value: string }) {
       <p className="text-sm text-gray-500 mb-1">{label}</p>
       <p className="text-2xl font-bold">{value}</p>
     </div>
-  );
-}
-
-function SubscriptionCard({ sub }: { sub: any }) {
-  const statusColors: Record<string, string> = {
-    active: 'bg-green-100 text-green-700',
-    awaiting_renewal: 'bg-yellow-100 text-yellow-700',
-    trial: 'bg-blue-100 text-blue-700',
-    expired: 'bg-gray-100 text-gray-700',
-    cancelled: 'bg-red-100 text-red-700',
-  };
-
-  const statusLabels: Record<string, string> = {
-    active: 'فعّال',
-    awaiting_renewal: 'بانتظار تجديد',
-    trial: 'تجريبي',
-    expired: 'منتهي',
-    cancelled: 'ملغي',
-  };
-
-  const daysLeft = Math.ceil(
-    (new Date(sub.renewal_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-  );
-
-  return (
-    <Link
-      href={`/dashboard/${sub.id}`}
-      className="p-5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-brand-500 transition block"
-    >
-      <div className="flex items-start justify-between mb-3">
-        <h3 className="font-bold text-lg">{sub.name}</h3>
-        <span
-          className={`text-xs px-2 py-1 rounded-full ${
-            statusColors[sub.status] ?? statusColors.active
-          }`}
-        >
-          {statusLabels[sub.status] ?? sub.status}
-        </span>
-      </div>
-      <p className="text-sm text-gray-500 mb-3">
-        {Number(sub.price).toFixed(2)} {sub.currency}
-      </p>
-      <p className="text-xs text-gray-400">
-        {daysLeft > 0 ? `باقي ${daysLeft} يوم` : `متأخر ${Math.abs(daysLeft)} يوم`}
-      </p>
-    </Link>
   );
 }
