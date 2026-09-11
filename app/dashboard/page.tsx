@@ -1,4 +1,5 @@
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { SpendingChart } from '@/components/SpendingChart';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
@@ -38,6 +39,24 @@ export default async function DashboardPage() {
     }, 0);
 
   const yearlyTotal = monthlyTotal * 12;
+
+  
+  const categoryTotals = Object.entries(
+    subs
+      .filter((s) => s.status === 'active')
+      .reduce<Record<string, number>>((acc, s) => {
+        const cyclesPerMonth: Record<string, number> = {
+          weekly: 4.33,
+          monthly: 1,
+          quarterly: 1 / 3,
+          semiannual: 1 / 6,
+          yearly: 1 / 12,
+        };
+        const factor = cyclesPerMonth[s.billing_cycle] ?? 1;
+        acc[s.category] = (acc[s.category] ?? 0) + Number(s.price) * factor;
+        return acc;
+      }, {})
+  ).map(([category, total]) => ({ category, total }));
 
   return (
     <main className="min-h-screen p-6 md:p-10">
@@ -81,6 +100,14 @@ export default async function DashboardPage() {
           />
           <StatCard label="اشتراكات فعّالة" value={String(activeCount)} />
         </div>
+        
+        {/* Chart */}
+        {subs.length > 0 && (
+          <div className="p-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 mb-8">
+            <h2 className="text-lg font-bold mb-4">الصرف حسب التصنيف</h2>
+            <SpendingChart data={categoryTotals} />
+          </div>
+        )}
 
         {/* Add button */}
         <div className="flex items-center justify-between mb-6">
