@@ -34,6 +34,35 @@ export async function GET(request: Request) {
     console.error('Failed to fetch subscriptions:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+  // 1) تحديث حالات الاشتراكات تلقائيًا
+  const statusResults = {
+    toAwaiting: 0,
+    toExpired: 0,
+  };
+
+  // الاشتراكات اللي فات تاريخ تجديدها → "بانتظار تجديد"
+  const { data: overdue } = await supabase
+    .from('subscriptions')
+    .select('id, renewal_date, status')
+    .eq('status', 'active')
+    .lt('renewal_date', today.toISOString().split('T')[0]);
+
+  for (const sub of overdue ?? []) {
+    const renewal = new Date(sub.renewal_date);
+    const daysOverdue = Math.floor(
+      (today.getTime() - renewal.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    const newStatus = daysOverdue > 30 ? 'expired' : 'awaiting_renewal';
+
+    await supabase
+      .from('subscriptions')
+      .update({ status: newStatus })
+      .eq('id', sub.id);
+
+    if (newStatus === 'expired') statusResults.toExpired++;
+    else statusResults.toAwaiting++;
+  }
 
   const results = {
     processed: 0,
@@ -112,6 +141,7 @@ export async function GET(request: Request) {
   return NextResponse.json({
     ok: true,
     ...results,
+    statusUpdates: statusResults,
     date: today.toISOString(),
   });
 }
