@@ -1,3 +1,4 @@
+import { SubscribeFromAlternative } from '@/components/SubscribeFromAlternative';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 
@@ -68,16 +69,21 @@ export default async function AlternativesPage() {
                         {alt!.note_ar}
                       </p>
                     )}
-                    {alt!.url && (
+                                      {alt!.url && (
                       <a
                         href={alt!.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-brand-600 font-semibold hover:underline"
+                        className="text-sm text-brand-600 font-semibold hover:underline inline-block mb-3"
                       >
                         زيارة الموقع →
                       </a>
                     )}
+                    <SubscribeFromAlternative
+                      alternativeName={alt!.name_ar}
+                      category={alt!.category}
+                      url={alt!.url ?? undefined}
+                    />
                   </div>
                 ))}
               </div>
