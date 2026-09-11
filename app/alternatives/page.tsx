@@ -43,10 +43,17 @@ export default async function AlternativesPage() {
           </Link>
         </div>
 
-        <h1 className="text-3xl font-bold mb-3">البدائل السعودية</h1>
-        <p className="text-gray-600 dark:text-gray-300 mb-10">
-          اقتراحات لخدمات سعودية في كل تصنيف، تختار منها اللي يناسبك.
-        </p>
+               <div className="flex items-center justify-between mb-10">
+          <p className="text-gray-600 dark:text-gray-300 text-lg">
+            اقتراحات لخدمات من كل تصنيف، تختار منها اللي يناسبك.
+          </p>
+          <Link
+            href="/alternatives/new"
+            className="px-4 py-2 rounded-lg bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 whitespace-nowrap mr-4"
+          >
+            + إضافة بديل
+          </Link>
+        </div>
 
         <div className="space-y-10">
           {Object.entries(grouped).map(([category, items]) => (
