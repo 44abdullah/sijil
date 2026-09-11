@@ -150,11 +150,10 @@ export async function GET(request: Request) {
       await sendTelegramMessage(telegramLink.chat_id, telegramText);
     }
 
-    const result = emailResult;
-    if ('error' in result && result.error) {
-      console.error('Email send failed for sub:', sub.id, result.error);
-      results.errors++;
-      continue;
+       // الإيميل اختياري حالياً (Resend محدود)
+    if ('error' in emailResult && emailResult.error) {
+      console.error('Email send failed for sub:', sub.id, emailResult.error);
+      // ما نزيد errors لأن الإيميل اختياري حالياً
     }
 
     // نسجل التنبيه
