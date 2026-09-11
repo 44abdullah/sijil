@@ -1,3 +1,4 @@
+import { sendTelegramMessage } from '@/lib/telegram/send';
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendEmail } from '@/lib/email/send';
@@ -120,12 +121,36 @@ export async function GET(request: Request) {
       continueUrl: `${appUrl}/api/action/continue?sub=${sub.id}`,
       snoozeUrl: `${appUrl}/api/action/snooze?sub=${sub.id}`,
     });
-
-    const result = await sendEmail({
+    // نبعت الإيميل دائمًا
+    const emailResult = await sendEmail({
       to: userEmail,
       subject: `تذكير: اشتراكك في ${sub.name} بيتجدد خلال ${daysLeft} يوم`,
       html,
     });
+
+    // نبعت تيليجرام إذا مربوط
+    const { data: telegramLink } = await supabase
+      .from('telegram_links')
+      .select('chat_id')
+      .eq('user_id', sub.user_id)
+      .maybeSingle();
+
+    if (telegramLink?.chat_id) {
+      const telegramText = [
+        `<b>⏰ تذكير من سِجل</b>`,
+        ``,
+        `اشتراكك في <b>${sub.name}</b> بيتجدد خلال <b>${daysLeft}</b> يوم.`,
+        ``,
+        `💰 السعر: ${Number(sub.price).toFixed(2)} ${sub.currency}`,
+        `📅 تاريخ التجديد: ${sub.renewal_date}`,
+        ``,
+        `سوّي اللي تبي من <a href="${appUrl}/dashboard/${sub.id}">هنا</a>.`,
+      ].join('\n');
+
+      await sendTelegramMessage(telegramLink.chat_id, telegramText);
+    }
+
+    const result = emailResult;
     if ('error' in result && result.error) {
       console.error('Email send failed for sub:', sub.id, result.error);
       results.errors++;
