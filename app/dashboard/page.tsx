@@ -75,6 +75,12 @@ export default async function DashboardPage() {
          <div className="flex gap-2 items-center">
   <ThemeToggle />
   <Link
+    href="/settings"
+    className="text-sm px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+  >
+    الإعدادات
+  </Link>
+           <Link
     href="/alternatives"
     className="text-sm px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
   >
