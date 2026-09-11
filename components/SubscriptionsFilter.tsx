@@ -28,7 +28,14 @@ const statusLabels: Record<string, string> = {
   expired: 'منتهي',
   cancelled: 'ملغي',
 };
-
+const categoryIcons: Record<string, string> = {
+  delivery: '🚚',
+  fitness: '💪',
+  entertainment: '🎬',
+  telecom: '📱',
+  software: '💻',
+  other: '📦',
+};
 const statusOrder: Record<string, number> = {
   active: 1,
   awaiting_renewal: 2,
@@ -121,8 +128,13 @@ function SubscriptionCard({ sub }: { sub: any }) {
       href={`/dashboard/${sub.id}`}
       className="p-5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-brand-500 transition block"
     >
-      <div className="flex items-start justify-between mb-3">
-        <h3 className="font-bold text-lg">{sub.name}</h3>
+           <div className="flex items-start justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">
+            {categoryIcons[sub.category] ?? '📦'}
+          </span>
+          <h3 className="font-bold text-lg">{sub.name}</h3>
+        </div>
         <span
           className={`text-xs px-2 py-1 rounded-full ${
             statusColors[sub.status] ?? statusColors.active
