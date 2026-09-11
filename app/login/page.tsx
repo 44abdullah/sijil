@@ -66,11 +66,18 @@ export default function LoginPage() {
               dir="ltr"
             />
           </div>
-
           <div className="mb-6">
-            <label className="block text-sm font-medium mb-2">
-              كلمة المرور
-            </label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium">
+                كلمة المرور
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-xs text-brand-600 hover:underline"
+              >
+                نسيت كلمة المرور؟
+              </Link>
+            </div>
             <input
               type="password"
               required
@@ -81,7 +88,6 @@ export default function LoginPage() {
               dir="ltr"
             />
           </div>
-
           {error && (
             <div className="mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm">
               {error}
