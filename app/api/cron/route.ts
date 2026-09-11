@@ -126,8 +126,8 @@ export async function GET(request: Request) {
       subject: `تذكير: اشتراكك في ${sub.name} بيتجدد خلال ${daysLeft} يوم`,
       html,
     });
-
     if ('error' in result && result.error) {
+      console.error('Email send failed for sub:', sub.id, result.error);
       results.errors++;
       continue;
     }
