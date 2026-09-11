@@ -19,8 +19,7 @@ export function NewSubscriptionTabs({
 }: {
   alternatives: Alternative[];
 }) {
-  const [tab, setTab] = useState<'manual' | 'suggestions'>('manual');
-
+const [tab, setTab] = useState<'manual' | 'suggestions'>('suggestions');
   return (
     <div>
       <div className="flex gap-2 mb-6 p-1 rounded-xl bg-gray-100 dark:bg-gray-800">
