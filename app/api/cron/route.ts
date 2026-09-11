@@ -100,9 +100,12 @@ export async function GET(request: Request) {
       continue;
     }
 
-    // نرسل الإيميل
-    const email = (sub.profiles as any).email;
-    const userEmail = email ?? '';
+     // نجيب الإيميل من auth.users
+    const { data: userData } = await supabase.auth.admin.getUserById(
+      sub.user_id
+    );
+
+    const userEmail = userData?.user?.email ?? '';
 
     if (!userEmail) continue;
 
