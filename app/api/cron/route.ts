@@ -24,10 +24,10 @@ export async function GET(request: Request) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // نجيب كل الاشتراكات الفعالة
+    // نجيب كل الاشتراكات الفعالة
   const { data: subs, error } = await supabase
     .from('subscriptions')
-    .select('*, profiles!inner(email)')
+    .select('*')
     .in('status', ['active', 'trial']);
 
   if (error) {
