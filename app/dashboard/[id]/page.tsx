@@ -1,3 +1,4 @@
+import { DeleteSubscriptionButton } from '@/components/DeleteSubscriptionButton';
 import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
@@ -80,7 +81,7 @@ export default async function SubscriptionDetailPage({
             </div>
           )}
 
-          <div className="flex gap-3">
+                   <div className="flex gap-3 flex-wrap">
             <Link
               href={`/dashboard/${sub.id}/edit`}
               className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-sm"
@@ -92,11 +93,12 @@ export default async function SubscriptionDetailPage({
                 href={sub.cancel_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 text-sm"
+                className="px-4 py-2 rounded-lg bg-brand-50 text-brand-700 hover:bg-brand-100 text-sm"
               >
                 رابط الإلغاء
               </a>
             )}
+            <DeleteSubscriptionButton id={sub.id} />
           </div>
         </div>
       </div>
