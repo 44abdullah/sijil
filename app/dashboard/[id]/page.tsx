@@ -1,3 +1,4 @@
+import { StatusBanner } from '@/components/StatusBanner';
 import { DeleteSubscriptionButton } from '@/components/DeleteSubscriptionButton';
 import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -49,6 +50,11 @@ export default async function SubscriptionDetailPage({
         >
           ← رجوع للوحة التحكم
         </Link>
+        <StatusBanner
+          subscriptionId={sub.id}
+          status={sub.status}
+          billingCycle={sub.billing_cycle}
+        />
 
         <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700">
           <div className="flex items-start justify-between mb-6">
