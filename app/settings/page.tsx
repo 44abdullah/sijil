@@ -1,5 +1,5 @@
 'use client';
-
+import { TelegramLinkCard } from '@/components/TelegramLinkCard';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -96,6 +96,8 @@ export default function SettingsPage() {
             </span>
           </div>
         </section>
+        {/* Telegram */}
+        <TelegramLinkCard />
 
         {/* Theme */}
         <section className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 mb-6">
