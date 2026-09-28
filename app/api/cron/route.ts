@@ -1,4 +1,4 @@
-import { sendTelegramMessage } from '@/lib/telegram/send';
+﻿import { sendTelegramMessage } from '@/lib/telegram/send';
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendEmail } from '@/lib/email/send';
@@ -25,7 +25,7 @@ export async function GET(request: Request) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-    // نجيب كل الاشتراكات الفعالة
+  // نجيب كل الاشتراكات الفعالة
   const { data: subs, error } = await supabase
     .from('subscriptions')
     .select('*')
@@ -35,6 +35,7 @@ export async function GET(request: Request) {
     console.error('Failed to fetch subscriptions:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
   // 1) تحديث حالات الاشتراكات تلقائيًا
   const statusResults = {
     toAwaiting: 0,
@@ -101,32 +102,38 @@ export async function GET(request: Request) {
       continue;
     }
 
-     // نجيب الإيميل من auth.users
+    // نجيب الإيميل من auth.users
     const { data: userData } = await supabase.auth.admin.getUserById(
       sub.user_id
     );
 
     const userEmail = userData?.user?.email ?? '';
 
-    if (!userEmail) continue;
+    const cancelUrl = `${appUrl}/api/action/cancel?sub=${sub.id}`;
+    const changeUrl = `${appUrl}/dashboard/${sub.id}/edit`;
+    const continueUrl = `${appUrl}/api/action/continue?sub=${sub.id}`;
+    const snoozeUrl = `${appUrl}/api/action/snooze?sub=${sub.id}`;
 
-    const html = ReminderEmail({
-      subscriptionName: sub.name,
-      price: Number(sub.price),
-      currency: sub.currency,
-      renewalDate: sub.renewal_date,
-      daysLeft,
-      cancelUrl: `${appUrl}/api/action/cancel?sub=${sub.id}`,
-      changeUrl: `${appUrl}/dashboard/${sub.id}/edit`,
-      continueUrl: `${appUrl}/api/action/continue?sub=${sub.id}`,
-      snoozeUrl: `${appUrl}/api/action/snooze?sub=${sub.id}`,
-    });
-    // نبعت الإيميل دائمًا
-    const emailResult = await sendEmail({
-      to: userEmail,
-      subject: `تذكير: اشتراكك في ${sub.name} بيتجدد خلال ${daysLeft} يوم`,
-      html,
-    });
+    let emailResult: any = null;
+    if (userEmail) {
+      const html = ReminderEmail({
+        subscriptionName: sub.name,
+        price: Number(sub.price),
+        currency: sub.currency,
+        renewalDate: sub.renewal_date,
+        daysLeft,
+        cancelUrl,
+        changeUrl,
+        continueUrl,
+        snoozeUrl,
+      });
+
+      emailResult = await sendEmail({
+        to: userEmail,
+        subject: `تذكير: اشتراكك في ${sub.name} بيتجدد خلال ${daysLeft} يوم`,
+        html,
+      });
+    }
 
     // نبعت تيليجرام إذا مربوط
     const { data: telegramLink } = await supabase
@@ -137,23 +144,35 @@ export async function GET(request: Request) {
 
     if (telegramLink?.chat_id) {
       const telegramText = [
-        `<b>⏰ تذكير من سِجل</b>`,
+        `⏰ <b>تذكير من سِجل</b>`,
         ``,
         `اشتراكك في <b>${sub.name}</b> بيتجدد خلال <b>${daysLeft}</b> يوم.`,
         ``,
-        `💰 السعر: ${Number(sub.price).toFixed(2)} ${sub.currency}`,
-        `📅 تاريخ التجديد: ${sub.renewal_date}`,
+        `💰 السعر: <b>${Number(sub.price).toFixed(2)} ${sub.currency}</b>`,
+        `📅 تاريخ التجديد: <b>${sub.renewal_date}</b>`,
         ``,
-        `سوّي اللي تبي من <a href="${appUrl}/dashboard/${sub.id}">هنا</a>.`,
+        `اختر الإجراء المناسب للاشتراك:`,
       ].join('\n');
 
-      await sendTelegramMessage(telegramLink.chat_id, telegramText);
+      const inlineKeyboard = [
+        [
+          { text: '✅ استمرار بالاشتراك', url: continueUrl },
+          { text: '⏳ تأجيل التنبيه', url: snoozeUrl },
+        ],
+        [
+          { text: '✏️ تعديل الاشتراك', url: changeUrl },
+          { text: '❌ إلغاء الاشتراك', url: cancelUrl },
+        ],
+      ];
+
+      await sendTelegramMessage(telegramLink.chat_id, telegramText, {
+        inline_keyboard: inlineKeyboard,
+      });
     }
 
-       // الإيميل اختياري حالياً (Resend محدود)
-    if ('error' in emailResult && emailResult.error) {
+    // الإيميل اختياري حالياً (Resend محدود)
+    if (emailResult && 'error' in emailResult && emailResult.error) {
       console.error('Email send failed for sub:', sub.id, emailResult.error);
-      // ما نزيد errors لأن الإيميل اختياري حالياً
     }
 
     // نسجل التنبيه

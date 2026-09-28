@@ -1,7 +1,8 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { SendNotificationButton } from '@/components/SendNotificationButton';
 
 const CATEGORIES = [
   { value: 'all', label: 'الكل' },
@@ -124,31 +125,40 @@ function SubscriptionCard({ sub }: { sub: any }) {
   );
 
   return (
-    <Link
-      href={`/dashboard/${sub.id}`}
-      className="p-5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-brand-500 transition block"
-    >
-           <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">
-            {categoryIcons[sub.category] ?? '📦'}
+    <div className="p-5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-brand-500 transition flex flex-col justify-between">
+      <Link href={`/dashboard/${sub.id}`} className="block">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">
+              {categoryIcons[sub.category] ?? '📦'}
+            </span>
+            <h3 className="font-bold text-lg">{sub.name}</h3>
+          </div>
+          <span
+            className={`text-xs px-2 py-1 rounded-full ${
+              statusColors[sub.status] ?? statusColors.active
+            }`}
+          >
+            {statusLabels[sub.status] ?? sub.status}
           </span>
-          <h3 className="font-bold text-lg">{sub.name}</h3>
         </div>
-        <span
-          className={`text-xs px-2 py-1 rounded-full ${
-            statusColors[sub.status] ?? statusColors.active
-          }`}
+        <p className="text-sm text-gray-500 mb-3">
+          {Number(sub.price).toFixed(2)} {sub.currency}
+        </p>
+        <p className="text-xs text-gray-400 mb-4">
+          {daysLeft > 0 ? `باقي ${daysLeft} يوم` : `متأخر ${Math.abs(daysLeft)} يوم`}
+        </p>
+      </Link>
+      
+      <div className="pt-3 border-t border-gray-100 dark:border-gray-700/60 flex items-center justify-between">
+        <SendNotificationButton subscriptionId={sub.id} />
+        <Link
+          href={`/dashboard/${sub.id}`}
+          className="text-xs text-brand-600 hover:underline"
         >
-          {statusLabels[sub.status] ?? sub.status}
-        </span>
+          التفاصيل ←
+        </Link>
       </div>
-      <p className="text-sm text-gray-500 mb-3">
-        {Number(sub.price).toFixed(2)} {sub.currency}
-      </p>
-      <p className="text-xs text-gray-400">
-        {daysLeft > 0 ? `باقي ${daysLeft} يوم` : `متأخر ${Math.abs(daysLeft)} يوم`}
-      </p>
-    </Link>
+    </div>
   );
 }
