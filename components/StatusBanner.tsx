@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { AlertTriangle, Clock, RefreshCw, XCircle, CheckCircle2, Loader2 } from 'lucide-react';
 
 const BILLING_CYCLES = [
   { value: 'weekly', days: 7 },
@@ -83,63 +84,74 @@ export function StatusBanner({ subscriptionId, status, billingCycle }: Props) {
   return (
     <>
       <div
-        className={`mb-6 p-4 rounded-2xl border ${
+        className={`mb-6 p-5 rounded-3xl border ${
           isExpired
-            ? 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-900'
-            : 'bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-900'
-        }`}
+            ? 'bg-rose-500/10 border-rose-500/20 text-rose-900 dark:text-rose-200'
+            : 'bg-amber-500/10 border-amber-500/20 text-amber-900 dark:text-amber-200'
+        } backdrop-blur-md shadow-sm`}
       >
-        <p
-          className={`text-sm font-semibold mb-3 ${
-            isExpired
-              ? 'text-red-800 dark:text-red-300'
-              : 'text-yellow-800 dark:text-yellow-300'
-          }`}
-        >
-          {isExpired
-            ? '⏰ هذا الاشتراك منتهي. جدده، ولا ألغه.'
-            : '⏰ هذا الاشتراك تجدد. أكد وش تبي تسوي.'}
-        </p>
+        <div className="flex items-start gap-3 mb-4">
+          <div
+            className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+              isExpired ? 'bg-rose-500/20 text-rose-600' : 'bg-amber-500/20 text-amber-600'
+            }`}
+          >
+            <Clock className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-sm font-bold mb-1">
+              {isExpired
+                ? 'الاشتراك منتهي حالياً. هل ترغب في تجديده أم إلغائه؟'
+                : 'موعد تجديد الاشتراك حان الآن. حدد حالتك الحالية.'}
+            </p>
+            <p className="text-xs opacity-80">
+              يمكنك تحديث حالة الاشتراك للحفاظ على دقة التحليلات والتنبيهات.
+            </p>
+          </div>
+        </div>
+
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => setShowRenew(true)}
             disabled={loading}
-            className="px-4 py-2 rounded-lg bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 disabled:opacity-50"
+            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold transition-all shadow-md shadow-emerald-600/20 disabled:opacity-50 flex items-center gap-1.5"
           >
-            جددت الاشتراك
+            <RefreshCw className="w-4 h-4" />
+            <span>تم تجديد الاشتراك</span>
           </button>
           <button
             onClick={handleCancel}
             disabled={loading}
-            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
+            className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs sm:text-sm font-bold transition-all disabled:opacity-50 flex items-center gap-1.5"
           >
-            ألغيت الاشتراك
+            <XCircle className="w-4 h-4 text-rose-500" />
+            <span>تم إلغاء الاشتراك</span>
           </button>
         </div>
-        {error && (
-          <p className="text-xs text-red-700 mt-2">{error}</p>
-        )}
+        {error && <p className="text-xs text-rose-600 mt-2 font-bold">{error}</p>}
       </div>
 
       {showRenew && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-sm w-full">
-            <h3 className="text-lg font-bold mb-2">تأكيد التجديد</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
-              بنحدّث تاريخ البداية لليوم، وبنضبط تاريخ التجديد الجديد
-              حسب مدة الاشتراك.
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center z-50 p-6">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+            <h3 className="text-lg font-bold mb-2 text-slate-900 dark:text-white flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+              تأكيد تجديد الاشتراك
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+              سيتم تحديث تاريخ بداية الاشتراك لليوم وحساب تاريخ التجديد القادم تلقائياً.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={handleRenew}
                 disabled={loading}
-                className="flex-1 py-2 rounded-lg bg-brand-600 text-white font-semibold hover:bg-brand-700 disabled:opacity-50"
+                className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
               >
-                {loading ? 'جاري...' : 'نعم، جددته'}
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>نعم، تم التجديد</span>}
               </button>
               <button
                 onClick={() => setShowRenew(false)}
-                className="flex-1 py-2 rounded-lg border border-gray-200 dark:border-gray-700 font-semibold hover:bg-gray-50 dark:hover:bg-gray-700"
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 font-bold text-xs sm:text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
               >
                 إلغاء
               </button>

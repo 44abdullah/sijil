@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { Plus, X, Loader2, CheckCircle2 } from 'lucide-react';
 
 const BILLING_CYCLES = [
   { value: 'weekly', label: 'أسبوعي', days: 7 },
@@ -99,48 +100,49 @@ export function SubscribeFromAlternative({ alternativeName, category, url }: Pro
     <>
       <button
         onClick={() => setOpen(true)}
-        className="text-sm px-4 py-2 rounded-lg bg-brand-600 text-white font-semibold hover:bg-brand-700 w-full mt-3"
+        className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center gap-1.5 mt-3"
       >
-        اشتركت فيه
+        <Plus className="w-4 h-4" />
+        <span>إضافة لاشتراكاتي</span>
       </button>
 
       {open && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between mb-4">
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex items-start justify-between mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
               <div>
-                <h3 className="text-lg font-bold">اشتراك جديد</h3>
-                <p className="text-sm text-gray-500 mt-1">{alternativeName}</p>
+                <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">إضافة اشتراك جديد</h3>
+                <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">{alternativeName}</p>
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="text-gray-400 hover:text-gray-600 text-xl"
+                className="p-1 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
-                ✕
+                <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">السعر</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">السعر (ريال سعودي)</label>
                 <input
                   type="number"
                   step="0.01"
                   required
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-transparent focus:border-brand-500 focus:outline-none"
-                  placeholder="29"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white text-sm focus:border-emerald-500 focus:outline-none"
+                  placeholder="29.00"
                   dir="ltr"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">المدة</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">مدة التجديد</label>
                 <select
                   value={billingCycle}
                   onChange={(e) => handleCycleChange(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-transparent focus:border-brand-500 focus:outline-none"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white text-sm focus:border-emerald-500 focus:outline-none"
                 >
                   {BILLING_CYCLES.map((c) => (
                     <option key={c.value} value={c.value}>
@@ -151,20 +153,20 @@ export function SubscribeFromAlternative({ alternativeName, category, url }: Pro
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">تاريخ البداية</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">تاريخ بداية الاشتراك</label>
                 <input
                   type="date"
                   required
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-transparent focus:border-brand-500 focus:outline-none"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white text-sm focus:border-emerald-500 focus:outline-none"
                   dir="ltr"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">
-                  التنبيه قبل كم يوم؟
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+                  التنبيه قبل التجديد بـ (أيام)
                 </label>
                 <input
                   type="number"
@@ -172,13 +174,13 @@ export function SubscribeFromAlternative({ alternativeName, category, url }: Pro
                   min={1}
                   value={reminderDays}
                   onChange={(e) => setReminderDays(Number(e.target.value))}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-transparent focus:border-brand-500 focus:outline-none"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white text-sm focus:border-emerald-500 focus:outline-none"
                   dir="ltr"
                 />
               </div>
 
               {error && (
-                <div className="p-3 rounded-lg bg-red-50 text-red-700 text-sm">
+                <div className="p-3 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-bold">
                   {error}
                 </div>
               )}
@@ -186,9 +188,10 @@ export function SubscribeFromAlternative({ alternativeName, category, url }: Pro
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 rounded-lg bg-brand-600 text-white font-semibold hover:bg-brand-700 transition disabled:opacity-50"
+                className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition-all shadow-md shadow-emerald-600/25 disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {loading ? 'جاري الحفظ...' : 'حفظ الاشتراك'}
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                <span>{loading ? 'جاري الحفظ...' : 'تأكيد الحفظ'}</span>
               </button>
             </form>
           </div>

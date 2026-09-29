@@ -1,10 +1,12 @@
 'use client';
+
 import { TelegramLinkCard } from '@/components/TelegramLinkCard';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { createClient } from '@/lib/supabase/client';
+import { ArrowRight, User, Sun, Moon, Monitor, Key, CheckCircle2, Lock, Loader2, ShieldCheck } from 'lucide-react';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -43,7 +45,7 @@ export default function SettingsPage() {
     }
 
     if (newPassword.length < 6) {
-      setError('كلمة المرور لازم تكون 6 أحرف على الأقل.');
+      setError('كلمة المرور يجب أن تكون 6 أحرف على الأقل.');
       return;
     }
 
@@ -58,92 +60,110 @@ export default function SettingsPage() {
       return;
     }
 
-    setMessage('تم تغيير كلمة المرور بنجاح!');
+    setMessage('تم تحديث كلمة المرور بنجاح!');
     setNewPassword('');
     setConfirmPassword('');
   }
 
   return (
-    <main className="min-h-screen p-6 md:p-10">
-      <div className="max-w-2xl mx-auto">
+    <main className="min-h-screen bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 p-4 sm:p-6 md:p-10 bg-mesh pb-20">
+      <div className="max-w-2xl mx-auto space-y-6">
         <Link
           href="/dashboard"
-          className="text-sm text-gray-500 hover:text-brand-600 mb-6 inline-block"
+          className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
         >
-          ← رجوع للوحة التحكم
+          <ArrowRight className="w-4 h-4" />
+          <span>العودة للوحة التحكم</span>
         </Link>
 
-        <h1 className="text-2xl font-bold mb-8">الإعدادات</h1>
+        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">الإعدادات</h1>
 
-        {/* Account info */}
-        <section className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 mb-6">
-          <h2 className="text-lg font-bold mb-4">معلومات الحساب</h2>
-          <div className="flex items-center justify-between">
+        {/* Account Info */}
+        <section className="bg-white/80 dark:bg-slate-900/80 p-6 sm:p-8 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 backdrop-blur-xl shadow-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+              <User className="w-5 h-5" />
+            </div>
+            <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">معلومات الحساب</h2>
+          </div>
+
+          <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
             <div>
-              <p className="text-xs text-gray-500 mb-1">الإيميل</p>
-              <p className="text-sm font-medium" dir="ltr">
+              <p className="text-xs text-slate-400 font-semibold mb-0.5">البريد الإلكتروني المسجّل</p>
+              <p className="text-sm font-bold text-slate-900 dark:text-white" dir="ltr">
                 {email}
               </p>
             </div>
             <span
-              className={`text-xs px-3 py-1 rounded-full ${
+              className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full ${
                 emailVerified
-                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-                  : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300'
+                  ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20'
+                  : 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20'
               }`}
             >
-              {emailVerified ? 'مفعّل ✓' : 'غير مفعّل'}
+              <ShieldCheck className="w-3.5 h-3.5" />
+              {emailVerified ? 'مفعّل' : 'غير مفعّل'}
             </span>
           </div>
         </section>
-        {/* Telegram */}
+
+        {/* Telegram Integration */}
         <TelegramLinkCard />
 
-        {/* Theme */}
-        <section className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 mb-6">
-          <h2 className="text-lg font-bold mb-4">المظهر</h2>
+        {/* Theme Settings */}
+        <section className="bg-white/80 dark:bg-slate-900/80 p-6 sm:p-8 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 backdrop-blur-xl shadow-sm">
+          <h2 className="text-lg font-extrabold text-slate-900 dark:text-white mb-4">مظهر التطبيق</h2>
           {mounted && (
-            <div className="flex gap-2">
+            <div className="grid grid-cols-3 gap-3">
               <button
                 onClick={() => setTheme('light')}
-                className={`flex-1 py-3 rounded-lg text-sm font-medium border ${
+                className={`py-3.5 px-4 rounded-2xl text-xs sm:text-sm font-bold border transition-all flex items-center justify-center gap-2 ${
                   theme === 'light'
-                    ? 'bg-brand-600 text-white border-brand-600'
-                    : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/20'
+                    : 'border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
                 }`}
               >
-                ☀️ فاتح
+                <Sun className="w-4 h-4" />
+                <span>فاتح</span>
               </button>
               <button
                 onClick={() => setTheme('dark')}
-                className={`flex-1 py-3 rounded-lg text-sm font-medium border ${
+                className={`py-3.5 px-4 rounded-2xl text-xs sm:text-sm font-bold border transition-all flex items-center justify-center gap-2 ${
                   theme === 'dark'
-                    ? 'bg-brand-600 text-white border-brand-600'
-                    : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/20'
+                    : 'border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
                 }`}
               >
-                🌙 غامق
+                <Moon className="w-4 h-4" />
+                <span>داكن</span>
               </button>
               <button
                 onClick={() => setTheme('system')}
-                className={`flex-1 py-3 rounded-lg text-sm font-medium border ${
+                className={`py-3.5 px-4 rounded-2xl text-xs sm:text-sm font-bold border transition-all flex items-center justify-center gap-2 ${
                   theme === 'system'
-                    ? 'bg-brand-600 text-white border-brand-600'
-                    : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/20'
+                    : 'border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
                 }`}
               >
-                💻 تلقائي
+                <Monitor className="w-4 h-4" />
+                <span>تلقائي</span>
               </button>
             </div>
           )}
         </section>
 
-        {/* Change password */}
-        <section className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700">
-          <h2 className="text-lg font-bold mb-4">تغيير كلمة المرور</h2>
+        {/* Password Change */}
+        <section className="bg-white/80 dark:bg-slate-900/80 p-6 sm:p-8 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 backdrop-blur-xl shadow-sm">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+              <Key className="w-5 h-5" />
+            </div>
+            <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">تغيير كلمة المرور</h2>
+          </div>
+
           <form onSubmit={handleChangePassword} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
                 كلمة المرور الجديدة
               </label>
               <input
@@ -152,15 +172,15 @@ export default function SettingsPage() {
                 minLength={6}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-transparent focus:border-brand-500 focus:outline-none"
+                className="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white text-sm focus:border-emerald-500 focus:outline-none"
                 placeholder="6 أحرف على الأقل"
                 dir="ltr"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">
-                تأكيد كلمة المرور
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+                تأكيد كلمة المرور الجديدة
               </label>
               <input
                 type="password"
@@ -168,30 +188,32 @@ export default function SettingsPage() {
                 minLength={6}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-transparent focus:border-brand-500 focus:outline-none"
+                className="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white text-sm focus:border-emerald-500 focus:outline-none"
                 placeholder="••••••••"
                 dir="ltr"
               />
             </div>
 
             {error && (
-              <div className="p-3 rounded-lg bg-red-50 text-red-700 text-sm">
+              <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-bold">
                 {error}
               </div>
             )}
 
             {message && (
-              <div className="p-3 rounded-lg bg-green-50 text-green-700 text-sm">
-                {message}
+              <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-bold flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                <span>{message}</span>
               </div>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-lg bg-brand-600 text-white font-semibold hover:bg-brand-700 transition disabled:opacity-50"
+              className="w-full py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition-all shadow-lg shadow-emerald-600/25 disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {loading ? 'جاري الحفظ...' : 'حفظ كلمة المرور'}
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Lock className="w-4 h-4" />}
+              <span>{loading ? 'جاري الحفظ...' : 'حفظ كلمة المرور الجديد'}</span>
             </button>
           </form>
         </section>

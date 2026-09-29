@@ -1,6 +1,7 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
+import { Bell, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export function SendNotificationButton({ subscriptionId }: { subscriptionId: string }) {
   const [loading, setLoading] = useState(false);
@@ -28,11 +29,11 @@ export function SendNotificationButton({ subscriptionId }: { subscriptionId: str
       } else {
         const details = [];
         if (data.telegramSent) details.push('تيليجرام');
-        if (data.emailSent) details.push('البريد الإلكتروني');
+        if (data.emailSent) details.push('الإيميل');
 
         setStatus({
           type: 'success',
-          message: details.length > 0 ? `تم الإرسال عبر: ${details.join(' و ')}` : 'تم إرسال التنبيه بنجاح!',
+          message: details.length > 0 ? `تم عبر: ${details.join(' و ')}` : 'تم الإرسال بنجاح!',
         });
       }
     } catch (err) {
@@ -53,21 +54,30 @@ export function SendNotificationButton({ subscriptionId }: { subscriptionId: str
       <button
         onClick={handleSend}
         disabled={loading}
-        className="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium transition disabled:opacity-50 flex items-center gap-1.5 shadow-sm"
+        className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-700 hover:text-emerald-700 dark:text-slate-300 dark:hover:text-emerald-400 text-xs font-bold transition-all disabled:opacity-50 flex items-center gap-1.5 border border-slate-200/80 dark:border-slate-700/80 hover:border-emerald-500/30"
       >
-        <span>🔔</span>
-        <span>{loading ? 'جاري الإرسال...' : 'إرسال تنبيه'}</span>
+        {loading ? (
+          <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600" />
+        ) : (
+          <Bell className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+        )}
+        <span>{loading ? 'جاري الإرسال...' : 'تجربة تنبيه'}</span>
       </button>
 
       {status && (
         <div
-          className={`absolute left-0 mt-2 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap z-10 shadow-lg border ${
+          className={`absolute left-0 mt-2 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap z-20 shadow-xl border flex items-center gap-1.5 backdrop-blur-md ${
             status.type === 'success'
-              ? 'bg-green-50 text-green-800 border-green-200 dark:bg-green-950 dark:text-green-200 dark:border-green-800'
-              : 'bg-red-50 text-red-800 border-red-200 dark:bg-red-950 dark:text-red-200 dark:border-red-800'
+              ? 'bg-emerald-900/90 text-emerald-100 border-emerald-700'
+              : 'bg-rose-900/90 text-rose-100 border-rose-700'
           }`}
         >
-          {status.message}
+          {status.type === 'success' ? (
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          ) : (
+            <AlertCircle className="w-4 h-4 text-rose-400" />
+          )}
+          <span>{status.message}</span>
         </div>
       )}
     </div>

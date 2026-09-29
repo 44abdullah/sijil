@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { Loader2, Save, CreditCard, Tag, Calendar, BellRing, Link2, FileText, CheckCircle2 } from 'lucide-react';
 
 const BILLING_CYCLES = [
   { value: 'weekly', label: 'أسبوعي', days: 7 },
@@ -108,15 +109,15 @@ export function ManualSubscriptionForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <Field label="اسم الاشتراك">
         <input
           type="text"
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="input"
-          placeholder="مثال: هنقرستيشن، وقت اللياقة، شاهد"
+          className="form-input"
+          placeholder="مثال: هنقرستيشن، وقت اللياقة، شاهد VIP"
         />
       </Field>
 
@@ -124,7 +125,7 @@ export function ManualSubscriptionForm() {
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="input"
+          className="form-input"
         >
           {CATEGORIES.map((c) => (
             <option key={c.value} value={c.value}>
@@ -142,8 +143,8 @@ export function ManualSubscriptionForm() {
             required
             value={price}
             onChange={(e) => setPrice(e.target.value)}
-            className="input"
-            placeholder="29"
+            className="form-input"
+            placeholder="29.00"
             dir="ltr"
           />
         </Field>
@@ -151,88 +152,92 @@ export function ManualSubscriptionForm() {
           <select
             value={currency}
             onChange={(e) => setCurrency(e.target.value)}
-            className="input"
+            className="form-input"
           >
-            <option value="SAR">ريال سعودي</option>
-            <option value="USD">دولار</option>
-            <option value="AED">درهم</option>
+            <option value="SAR">ريال سعودي (SAR)</option>
+            <option value="USD">دولار (USD)</option>
+            <option value="AED">درهم (AED)</option>
           </select>
         </Field>
       </div>
 
-      <Field label="مدة الاشتراك">
-        <select
-          value={billingCycle}
-          onChange={(e) => handleCycleChange(e.target.value)}
-          className="input"
-        >
-          {BILLING_CYCLES.map((c) => (
-            <option key={c.value} value={c.value}>
-              {c.label}
-            </option>
-          ))}
-        </select>
-      </Field>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <Field label="مدة الاشتراك">
+          <select
+            value={billingCycle}
+            onChange={(e) => handleCycleChange(e.target.value)}
+            className="form-input"
+          >
+            {BILLING_CYCLES.map((c) => (
+              <option key={c.value} value={c.value}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+        </Field>
 
-      <Field label="تاريخ البداية">
-        <input
-          type="date"
-          required
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          className="input"
-          dir="ltr"
-        />
-      </Field>
+        <Field label="تاريخ بداية الاشتراك">
+          <input
+            type="date"
+            required
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="form-input"
+            dir="ltr"
+          />
+        </Field>
+      </div>
 
-      <Field label="التنبيه قبل كم يوم؟">
+      <Field label="التنبيه قبل كم يوم من التجديد؟">
         <input
           type="number"
           required
           min={1}
           value={reminderDays}
           onChange={(e) => setReminderDays(Number(e.target.value))}
-          className="input"
+          className="form-input"
           dir="ltr"
         />
-        <p className="text-xs text-gray-500 mt-1">
-          افتراضي حسب مدة الاشتراك، تقدر تعدله.
+        <p className="text-xs text-slate-400 mt-1">
+          تم التحديد تلقائياً بناءً على دورة الاشتراك، ويمكنك تخصيص الأيام.
         </p>
       </Field>
 
-      <Field label="طريقة الدفع (اختياري)">
-        <input
-          type="text"
-          value={paymentMethod}
-          onChange={(e) => setPaymentMethod(e.target.value)}
-          className="input"
-          placeholder="مدى، Apple Pay، STC Pay..."
-        />
-      </Field>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <Field label="طريقة الدفع (اختياري)">
+          <input
+            type="text"
+            value={paymentMethod}
+            onChange={(e) => setPaymentMethod(e.target.value)}
+            className="form-input"
+            placeholder="مدى، Apple Pay، STC Pay..."
+          />
+        </Field>
 
-      <Field label="رابط الإلغاء (اختياري)">
-        <input
-          type="url"
-          value={cancelUrl}
-          onChange={(e) => setCancelUrl(e.target.value)}
-          className="input"
-          placeholder="https://..."
-          dir="ltr"
-        />
-      </Field>
+        <Field label="رابط إلغاء الاشتراك (اختياري)">
+          <input
+            type="url"
+            value={cancelUrl}
+            onChange={(e) => setCancelUrl(e.target.value)}
+            className="form-input"
+            placeholder="https://..."
+            dir="ltr"
+          />
+        </Field>
+      </div>
 
       <Field label="ملاحظات (اختياري)">
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          className="input"
+          className="form-input resize-none"
           rows={3}
-          placeholder="أي شي تبي تتذكره"
+          placeholder="أي تفاصيل أو شروط ترغب بتدوينها"
         />
       </Field>
 
       {error && (
-        <div className="p-3 rounded-lg bg-red-50 text-red-700 text-sm">
+        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-bold">
           {error}
         </div>
       )}
@@ -240,25 +245,32 @@ export function ManualSubscriptionForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-3 rounded-lg bg-brand-600 text-white font-semibold hover:bg-brand-700 transition disabled:opacity-50"
+        className="w-full py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition-all shadow-lg shadow-emerald-600/25 hover:shadow-emerald-600/40 disabled:opacity-50 flex items-center justify-center gap-2"
       >
-        {loading ? 'جاري الحفظ...' : 'حفظ الاشتراك'}
+        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+        <span>{loading ? 'جاري حفظ الاشتراك...' : 'حفظ الاشتراك الآن'}</span>
       </button>
 
       <style jsx global>{`
-        .input {
+        .form-input {
           width: 100%;
-          padding: 0.75rem 1rem;
-          border-radius: 0.5rem;
-          border: 1px solid rgb(229 231 235);
-          background: transparent;
+          padding: 0.875rem 1.25rem;
+          border-radius: 1rem;
+          border: 1px solid rgba(226, 232, 240, 0.8);
+          background-color: rgba(255, 255, 255, 0.8);
+          color: inherit;
+          font-size: 0.875rem;
+          font-weight: 500;
           outline: none;
+          transition: all 0.2s ease;
         }
-        .input:focus {
-          border-color: rgb(20 184 166);
+        .dark .form-input {
+          border-color: rgba(31, 45, 70, 0.8);
+          background-color: rgba(19, 28, 46, 0.8);
         }
-        .dark .input {
-          border-color: rgb(55 65 81);
+        .form-input:focus {
+          border-color: #10b981;
+          box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
         }
       `}</style>
     </form>
@@ -274,7 +286,9 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium mb-2">{label}</label>
+      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+        {label}
+      </label>
       {children}
     </div>
   );

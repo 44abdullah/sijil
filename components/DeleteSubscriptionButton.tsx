@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { Trash2, AlertTriangle, Loader2 } from 'lucide-react';
 
 export function DeleteSubscriptionButton({ id }: { id: string }) {
   const router = useRouter();
@@ -21,7 +22,7 @@ export function DeleteSubscriptionButton({ id }: { id: string }) {
     setLoading(false);
 
     if (error) {
-      alert('صار خطأ: ' + error.message);
+      alert('حدث خطأ أثناء الحذف: ' + error.message);
       return;
     }
 
@@ -33,29 +34,33 @@ export function DeleteSubscriptionButton({ id }: { id: string }) {
     <>
       <button
         onClick={() => setShowConfirm(true)}
-        className="px-4 py-2 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 text-sm font-medium"
+        className="px-4 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-bold transition-all border border-rose-500/20 flex items-center gap-1.5"
       >
-        حذف
+        <Trash2 className="w-4 h-4" />
+        <span>حذف</span>
       </button>
 
       {showConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-sm w-full">
-            <h3 className="text-lg font-bold mb-2">تأكيد الحذف</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
-              هل أنت متأكد؟ لا يمكن التراجع عن هذا الإجراء.
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center z-50 p-6">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center mb-4">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">تأكيد حذف الاشتراك</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+              هل أنت متأكد من رغبتك في حذف هذا الاشتراك؟ لا يمكن التراجع عن هذه العملية بعد التأكيد.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={handleDelete}
                 disabled={loading}
-                className="flex-1 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700 disabled:opacity-50"
+                className="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs sm:text-sm transition-all shadow-md shadow-rose-600/25 disabled:opacity-50 flex items-center justify-center gap-1.5"
               >
-                {loading ? 'جاري الحذف...' : 'نعم، احذف'}
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>تأكيد الحذف</span>}
               </button>
               <button
                 onClick={() => setShowConfirm(false)}
-                className="flex-1 py-2 rounded-lg border border-gray-200 dark:border-gray-700 font-semibold hover:bg-gray-50 dark:hover:bg-gray-700"
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 font-bold text-xs sm:text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
               >
                 إلغاء
               </button>

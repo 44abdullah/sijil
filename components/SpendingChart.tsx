@@ -18,7 +18,8 @@ const CATEGORY_LABELS: Record<string, string> = {
   other: 'أخرى',
 };
 
-const COLORS = ['#0d9488', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#6b7280'];
+// Rich harmonious palette matching emerald/teal theme
+const COLORS = ['#10b981', '#06b6d4', '#6366f1', '#f59e0b', '#ec4899', '#8b5cf6'];
 
 type Props = {
   data: { category: string; total: number }[];
@@ -27,8 +28,8 @@ type Props = {
 export function SpendingChart({ data }: Props) {
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-gray-400 text-sm">
-        أضف اشتراكات عشان تشوف الرسم البياني
+      <div className="flex items-center justify-center h-64 text-slate-400 text-sm font-medium">
+        أضف اشتراكات لتسجيل وتوزيع الرسم البياني للمصاريف
       </div>
     );
   }
@@ -46,30 +47,38 @@ export function SpendingChart({ data }: Props) {
             data={chartData}
             cx="50%"
             cy="50%"
-            innerRadius={60}
+            innerRadius={65}
             outerRadius={100}
-            paddingAngle={2}
+            paddingAngle={4}
             dataKey="value"
+            stroke="none"
           >
             {chartData.map((_, index) => (
               <Cell
                 key={`cell-${index}`}
                 fill={COLORS[index % COLORS.length]}
+                className="transition-all duration-200 hover:opacity-80"
               />
             ))}
           </Pie>
           <Tooltip
-            formatter={(value: number) => `${value} ريال`}
+            formatter={(value: number) => [`${value} ر.س`, 'التكلفة الشهريّة']}
             contentStyle={{
-              borderRadius: 8,
-              border: 'none',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              borderRadius: '16px',
+              backgroundColor: '#0f172a',
+              color: '#fff',
+              border: '1px solid rgba(255,255,255,0.1)',
+              boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)',
+              padding: '10px 16px',
+              fontSize: '13px',
+              fontWeight: '600',
             }}
+            itemStyle={{ color: '#34d399' }}
           />
           <Legend
             verticalAlign="bottom"
             iconType="circle"
-            wrapperStyle={{ fontSize: 13 }}
+            wrapperStyle={{ fontSize: 13, paddingTop: 16 }}
           />
         </PieChart>
       </ResponsiveContainer>
