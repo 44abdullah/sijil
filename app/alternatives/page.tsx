@@ -86,12 +86,27 @@ export default async function AlternativesPage() {
                     className="p-6 rounded-3xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 hover:border-emerald-500/40 transition-all shadow-sm hover:shadow-lg flex flex-col justify-between group"
                   >
                     <div>
-                      <div className="flex items-start justify-between gap-3 mb-2">
-                        <div>
+                      <div className="flex items-start justify-between gap-3 mb-4">
+                        <div className="flex items-center gap-3 min-w-0">
+                          {alt!.image_url ? (
+                            <img
+                              src={alt!.image_url}
+                              alt={`شعار ${alt!.name_ar}`}
+                              className="w-12 h-12 rounded-2xl object-cover bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-shrink-0"
+                              loading="lazy"
+                              referrerPolicy="no-referrer"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
+                              <Tag className="w-5 h-5" />
+                            </div>
+                          )}
+                          <div className="min-w-0">
                           <h3 className="font-extrabold text-lg text-slate-900 dark:text-white">{alt!.name_ar}</h3>
                           <p className="text-xs font-medium text-slate-400" dir="ltr">
                             {alt!.name_en}
                           </p>
+                        </div>
                         </div>
                         {alt!.url && (
                           <a
