@@ -46,6 +46,7 @@ export default function EditSubscriptionPage({
   const [notes, setNotes] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [cancelUrl, setCancelUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
 
   useEffect(() => {
     async function load() {
@@ -72,6 +73,7 @@ export default function EditSubscriptionPage({
       setNotes(data.notes ?? '');
       setPaymentMethod(data.payment_method ?? '');
       setCancelUrl(data.cancel_url ?? '');
+      setImageUrl(data.image_url ?? '');
       setLoading(false);
     }
     load();
@@ -99,6 +101,7 @@ export default function EditSubscriptionPage({
         notes,
         payment_method: paymentMethod,
         cancel_url: cancelUrl,
+        image_url: imageUrl || null,
       })
       .eq('id', params.id);
 
@@ -207,6 +210,17 @@ export default function EditSubscriptionPage({
                 </option>
               ))}
             </select>
+          </Field>
+
+          <Field label="رابط صورة أو شعار الاشتراك (اختياري)">
+            <input
+              type="url"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              className="form-input"
+              placeholder="https://example.com/logo.png"
+              dir="ltr"
+            />
           </Field>
 
           <div className="grid sm:grid-cols-2 gap-4">

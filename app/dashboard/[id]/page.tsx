@@ -80,7 +80,16 @@ export default async function SubscriptionDetailPage({
 
         <div className="bg-white/80 dark:bg-slate-900/80 p-6 sm:p-8 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 backdrop-blur-xl shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8 pb-6 border-b border-slate-100 dark:border-slate-800">
-            <div>
+            <div className="flex items-center gap-4">
+              {sub.image_url && (
+                <img
+                  src={sub.image_url}
+                  alt={`شعار ${sub.name}`}
+                  className="w-16 h-16 rounded-2xl object-cover bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
+                  referrerPolicy="no-referrer"
+                />
+              )}
+              <div>
               <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1 block">
                 تفاصيل الاشتراك
               </span>
@@ -89,6 +98,7 @@ export default async function SubscriptionDetailPage({
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                 {statusLabels[sub.status] ?? sub.status}
               </span>
+              </div>
             </div>
 
             <div className="flex items-center gap-2">

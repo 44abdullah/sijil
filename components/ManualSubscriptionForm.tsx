@@ -55,6 +55,7 @@ export function ManualSubscriptionForm() {
   const [notes, setNotes] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [cancelUrl, setCancelUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -95,6 +96,7 @@ export function ManualSubscriptionForm() {
       notes,
       payment_method: paymentMethod,
       cancel_url: cancelUrl,
+      image_url: imageUrl || null,
     });
 
     setLoading(false);
@@ -233,6 +235,17 @@ export function ManualSubscriptionForm() {
           className="form-input resize-none"
           rows={3}
           placeholder="أي تفاصيل أو شروط ترغب بتدوينها"
+        />
+      </Field>
+
+      <Field label="رابط صورة أو شعار الاشتراك (اختياري)">
+        <input
+          type="url"
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+          className="form-input"
+          placeholder="https://example.com/logo.png"
+          dir="ltr"
         />
       </Field>
 

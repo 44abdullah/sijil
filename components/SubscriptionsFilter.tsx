@@ -185,8 +185,18 @@ function SubscriptionCard({ sub }: { sub: any }) {
       <div>
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-              <IconComponent className="w-6 h-6" />
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
+              {sub.image_url ? (
+                <img
+                  src={sub.image_url}
+                  alt={`شعار ${sub.name}`}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <IconComponent className="w-6 h-6" />
+              )}
             </div>
             <div>
               <h3 className="font-extrabold text-base text-slate-900 dark:text-white line-clamp-1">
