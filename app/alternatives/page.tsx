@@ -132,6 +132,11 @@ export default async function AlternativesPage() {
                       alternativeName={alt!.name_ar}
                       category={alt!.category}
                       url={alt!.url ?? undefined}
+                      imageUrl={alt!.image_url ?? undefined}
+                      defaultPrice={alt!.default_price != null ? Number(alt!.default_price) : undefined}
+                      defaultCurrency={alt!.default_currency ?? undefined}
+                      defaultBillingCycle={alt!.default_billing_cycle ?? undefined}
+                      defaultPlan={alt!.default_plan ?? undefined}
                     />
                   </div>
                 ))}
