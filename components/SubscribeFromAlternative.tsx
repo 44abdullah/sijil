@@ -34,17 +34,32 @@ type Props = {
   alternativeName: string;
   category: string;
   url?: string;
+  imageUrl?: string;
+  defaultPrice?: number;
+  defaultCurrency?: string;
+  defaultBillingCycle?: string;
+  defaultPlan?: string;
 };
 
-export function SubscribeFromAlternative({ alternativeName, category, url }: Props) {
+export function SubscribeFromAlternative({
+  alternativeName,
+  category,
+  url,
+  imageUrl,
+  defaultPrice,
+  defaultCurrency = 'SAR',
+  defaultBillingCycle = 'monthly',
+  defaultPlan,
+}: Props) {
   const router = useRouter();
   const supabase = createClient();
 
   const [open, setOpen] = useState(false);
-  const [price, setPrice] = useState('');
-  const [billingCycle, setBillingCycle] = useState('monthly');
+  const [price, setPrice] = useState(defaultPrice != null ? String(defaultPrice) : '');
+  const [currency, setCurrency] = useState(defaultCurrency);
+  const [billingCycle, setBillingCycle] = useState(defaultBillingCycle);
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
-  const [reminderDays, setReminderDays] = useState(3);
+  const [reminderDays, setReminderDays] = useState(getDefaultReminder(defaultBillingCycle));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -74,7 +89,7 @@ export function SubscribeFromAlternative({ alternativeName, category, url }: Pro
       name: alternativeName,
       category,
       price: Number(price),
-      currency: 'SAR',
+      currency,
       billing_cycle: billingCycle,
       cycle_days: cycle.days,
       start_date: startDate,
@@ -82,6 +97,7 @@ export function SubscribeFromAlternative({ alternativeName, category, url }: Pro
       status: 'active',
       reminder_days: reminderDays,
       cancel_url: url ?? '',
+      image_url: imageUrl ?? null,
     });
 
     setLoading(false);
@@ -124,17 +140,32 @@ export function SubscribeFromAlternative({ alternativeName, category, url }: Pro
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">السعر (ريال سعودي)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  required
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white text-sm focus:border-emerald-500 focus:outline-none"
-                  placeholder="29.00"
-                  dir="ltr"
-                />
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">السعر الافتراضي</label>
+                <div className="grid grid-cols-[1fr_100px] gap-2">
+                  <input
+                    type="number"
+                    step="0.01"
+                    required
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white text-sm focus:border-emerald-500 focus:outline-none"
+                    placeholder="أدخل سعر الباقة"
+                    dir="ltr"
+                  />
+                  <select
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value)}
+                    className="w-full px-3 py-3 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white text-sm focus:border-emerald-500 focus:outline-none"
+                    dir="ltr"
+                  >
+                    <option value="SAR">SAR</option>
+                    <option value="USD">USD</option>
+                    <option value="AED">AED</option>
+                  </select>
+                </div>
+                {defaultPlan && (
+                  <p className="text-[11px] text-slate-400 mt-1.5">القيمة المقترحة لباقة: {defaultPlan}</p>
+                )}
               </div>
 
               <div>
