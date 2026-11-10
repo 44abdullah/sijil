@@ -64,6 +64,16 @@ const mockSubscriptions = [
     status: 'trial',
     renewal_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
   },
+  {
+    name: 'أمازون برايم',
+    category: 'delivery',
+    billing_cycle: 'monthly',
+    price: 16.00,
+    currency: 'ر.س',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Amazon_Prime_Logo.svg/1024px-Amazon_Prime_Logo.svg.png',
+    status: 'active',
+    renewal_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+  },
 ];
 
 async function seed() {

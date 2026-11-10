@@ -14,13 +14,31 @@ const CATEGORY_LABELS: Record<string, string> = {
   software: 'برامج وأدوات',
 };
 
-export default async function AlternativesPage() {
+export default async function AlternativesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ cats?: string }>;
+}) {
   const supabase = await createClient();
+  const params = await searchParams;
 
-  const { data: alternatives } = await supabase
-    .from('alternatives')
-    .select('*')
-    .order('category');
+  // لو في param "cats" = جاي من الـ dashboard (مفلتر حسب اشتراكات المستخدم)
+  // لو ما في param = عرض الكل (الصفحة العامة)
+  const hasCatsParam = 'cats' in params;
+  const userCats = params.cats
+    ? params.cats.split(',').filter(Boolean)
+    : null;
+
+  // لو cats فارغ تماماً (مستخدم بدون اشتراكات) = لا نجلب شيء
+  const shouldShowEmpty = hasCatsParam && userCats !== null && userCats.length === 0;
+
+  let query = supabase.from('alternatives').select('*').order('category');
+
+  if (!shouldShowEmpty && userCats && userCats.length > 0) {
+    query = query.in('category', userCats);
+  }
+
+  const { data: alternatives } = shouldShowEmpty ? { data: [] } : await query;
 
   const grouped = (alternatives ?? []).reduce<
     Record<string, typeof alternatives>
@@ -30,6 +48,8 @@ export default async function AlternativesPage() {
     acc[alt.category]!.push(alt);
     return acc;
   }, {});
+
+  const isFiltered = hasCatsParam;
 
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 p-4 sm:p-6 md:p-10 bg-mesh pb-20">
@@ -66,13 +86,35 @@ export default async function AlternativesPage() {
           </div>
           <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">دليل البدائل والخدمات السعودية</h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-1 max-w-2xl">
-            قائمة منسقة بأفضل الخدمات المحلية، يمكنك تصفحها وزيارة موقعها أو إضافتها بضغطة زر إلى جدول اشتراكاتك.
+            {isFiltered
+              ? 'بدائل مقترحة بناءً على اشتراكاتك الحالية.'
+              : 'قائمة منسقة بأفضل الخدمات المحلية، يمكنك تصفحها وزيارة موقعها أو إضافتها بضغطة زر إلى جدول اشتراكاتك.'}
           </p>
         </div>
 
         {/* Grouped alternatives grid */}
         <div className="space-y-12">
-          {Object.entries(grouped).map(([category, items]) => (
+          {shouldShowEmpty || Object.keys(grouped).length === 0 ? (
+            <div className="text-center py-24 bg-white/80 dark:bg-slate-900/80 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
+              <div className="w-16 h-16 rounded-3xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4 text-slate-400">
+                <Sparkles className="w-8 h-8" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-2">
+                لا توجد بدائل مقترحة بعد
+              </h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto mb-6">
+                أضف اشتراكاتك في لوحة التحكم حتى نقترح لك البدائل المناسبة.
+              </p>
+              <Link
+                href="/dashboard/new"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-500 transition-all shadow-md shadow-emerald-600/20"
+              >
+                <span>إضافة اشتراك</span>
+              </Link>
+            </div>
+          ) : (
+            Object.entries(grouped).map(([category, items]) => (
+
             <div key={category} className="space-y-4">
               <h2 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2 pb-2 border-b border-slate-200/80 dark:border-slate-800/80">
                 <Tag className="w-5 h-5 text-emerald-500" />
@@ -143,7 +185,7 @@ export default async function AlternativesPage() {
               </div>
             </div>
           ))}
-        </div>
+        </div></div>
       </div>
     </main>
   );

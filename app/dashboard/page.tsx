@@ -26,7 +26,23 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect('/login');
+    // Show guest option instead of forcing login
+    return (
+      <main className="min-h-screen bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 flex items-center justify-center p-4">
+        <div className="text-center space-y-4">
+          <h2 className="text-2xl font-bold">مستخدم غير مسجّل</h2>
+          <p className="text-sm text-slate-600 dark:text-slate-300">الرجاء تسجيل الدخول أو الدخول كضيف لتستعرض البيانات.</p>
+          <div className="flex gap-4 justify-center">
+            <Link href="/login" className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 transition">
+              تسجيل الدخول
+            </Link>
+            <Link href="/guest" className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700 transition">
+              دخول كضيف
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   const emailVerified = user.email_confirmed_at != null;
@@ -36,6 +52,13 @@ export default async function DashboardPage() {
     .order('renewal_date', { ascending: true });
 
   const subs = subscriptions ?? [];
+
+  // استخراج الـ categories الفريدة من اشتراكات المستخدم
+  const userCategories = [...new Set(subs.map((s) => s.category))].filter(Boolean);
+  const alternativesHref =
+    userCategories.length > 0
+      ? `/alternatives?cats=${userCategories.join(',')}`
+      : '/alternatives?cats=';
 
   const activeCount = subs.filter((s) => s.status === 'active').length;
 
@@ -105,7 +128,7 @@ export default async function DashboardPage() {
             <ThemeToggle />
 
             <Link
-              href="/alternatives"
+              href={alternativesHref}
               className="text-xs sm:text-sm font-semibold px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors flex items-center gap-1.5"
             >
               <Sparkles className="w-4 h-4 text-emerald-500" />
